@@ -67,7 +67,7 @@ class Crawler(threading.Thread):
                     print('插入数据成功')
                 db.commit()
         # except Exception as e:
-            pass
+        #     pass
             # print(e)
             # print('数据入库失败')
         finally:
