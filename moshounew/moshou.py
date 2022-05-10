@@ -4,11 +4,11 @@ import time
 import threading
 import re
 import pymysql
-from config import URL_POOL, HEADERS, MYSQLONFIG, TIME_DELAY, START
+from config import URL_POOL1, HEADERS, MYSQLONFIG, TIME_DELAY, START
 
 
 class Crawler(threading.Thread):
-
+    '''创建线程爬取不同的区服'''
     def __init__(self, url, *args, **kwargs):
         super(Crawler, self).__init__()
         self.url = url
@@ -50,7 +50,7 @@ class Crawler(threading.Thread):
             for data in datas:
                 sql = "insert into gamecoindealrecord set gname='{}', duration_time='{}', " \
                       "proportion1='{}', proportion2='{}', quantity='{}', minnum={}, maxnum={}, gid='{}';"\
-                    .format(gname, data[0], data[2], data[3], data[4], int(data[5][:-1]), int(data[6][:-1]), data[7])
+                    .format(gname, data[0], data[2], data[3], int(data[4]), int(data[5][:-1]), int(data[6][:-1]), data[7])
                 cursor.execute(sql)
                 db.commit()
                 # print('插入数据库成功')
@@ -61,11 +61,6 @@ class Crawler(threading.Thread):
         finally:
             cursor.close()
             db.close()
-
-
-
-
-
 
 
 
@@ -82,12 +77,6 @@ class Crawler(threading.Thread):
 
 
 
-
-
-
-
-
-
 if __name__ == '__main__':
     headers3 = {
         'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.127 Safari/537.36',
@@ -97,7 +86,7 @@ if __name__ == '__main__':
     thread_pool = []
 
 
-    for url in URL_POOL:
+    for url in URL_POOL1:
         t = Crawler(url)
         thread_pool.append(t)
 
@@ -107,25 +96,6 @@ if __name__ == '__main__':
 
     for t in thread_pool:
         t.join()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
