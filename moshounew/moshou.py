@@ -48,13 +48,25 @@ class Crawler(threading.Thread):
         cursor = db.cursor()
         try:
             for data in datas:
-                sql = "insert into gamecoindealrecord set gname='{}', duration_time='{}', " \
-                      "proportion1='{}', proportion2='{}', quantity='{}', minnum={}, maxnum={}, gid='{}';"\
-                    .format(gname, data[0], data[2], data[3], int(data[4]), int(data[5][:-1]), int(data[6][:-1]), data[7])
-                cursor.execute(sql)
+                # sql = "insert into gamecoindealrecord set gname='{}', duration_time='{}', " \
+                #       "proportion1='{}', proportion2='{}', quantity='{}', minnum={}, maxnum={}, gid='{}';"\
+                #     .format(gname, data[0], data[2], data[3], int(data[4]), int(data[5][:-1]), int(data[6][:-1]), data[7])
+                # 先查询是否有商家的记录，如果没有就直接插入，如果有就更新商家的数据。
+                sql = "insert into gamecoindealrecord(gname, duration_time,proportion1, proportion2, quantity, minnum, maxnum, gid) " \
+                       "select '{}', '{}', '{}', '{}', '{}', '{}', '{}', '{}' from gamecoindealrecord " \
+                       "where not exists (select * from gamecoindealrecord where gid='{}') limit 1;"\
+                    .format(gname, data[0], data[2], data[3], int(data[4]), int(data[5][:-1]), int(data[6][:-1]), data[7], data[7])
+                count = cursor.execute(sql)
+                if count == 0:
+                    sql1 = "update gamecoindealrecord set gname='{}', duration_time='{}', proportion1='{}', " \
+                          "proportion2='{}', quantity='{}', minnum={}, maxnum={} WHERE gid = '{}';"\
+                        .format(gname, data[0], data[2], data[3], int(data[4]), int(data[5][:-1]), int(data[6][:-1]), data[7])
+                    cursor.execute(sql1)
+                    print('更新数据成功')
+                else:
+                    print('插入数据成功')
                 db.commit()
-                # print('插入数据库成功')
-        except Exception as e:
+        # except Exception as e:
             pass
             # print(e)
             # print('数据入库失败')
